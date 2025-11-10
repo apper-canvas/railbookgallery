@@ -172,10 +172,10 @@ const TrainStatus = () => {
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-2xl font-bold mb-2">
-                  {trainStatus.trainNumber} - {trainStatus.trainName}
+{trainStatus.train_number_c} - {trainStatus.train_name_c}
                 </h2>
                 <p className="text-blue-100">
-                  {trainStatus.origin} → {trainStatus.destination}
+{trainStatus.origin_c} → {trainStatus.destination_c}
                 </p>
               </div>
               <Badge 
@@ -220,9 +220,9 @@ const TrainStatus = () => {
             <div className="flex items-center justify-between mb-8 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg border border-blue-100">
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900 mb-1">
-                  {trainStatus.departureTime}
+{trainStatus.departure_time_c}
                 </p>
-                <p className="text-gray-600 font-medium">{trainStatus.origin}</p>
+<p className="text-gray-600 font-medium">{trainStatus.origin_c}</p>
                 <p className="text-sm text-gray-500">Departure</p>
               </div>
               
@@ -234,14 +234,14 @@ const TrainStatus = () => {
                   <div className="w-24 h-px bg-gradient-to-r from-secondary to-primary"></div>
                   <div className="w-2 h-2 bg-primary rounded-full"></div>
                 </div>
-                <p className="text-xs text-gray-500 mt-2 font-medium">{trainStatus.duration}</p>
+<p className="text-xs text-gray-500 mt-2 font-medium">{trainStatus.duration_c}</p>
               </div>
               
               <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900 mb-1">
-                  {trainStatus.arrivalTime}
+{trainStatus.arrival_time_c}
                 </p>
-                <p className="text-gray-600 font-medium">{trainStatus.destination}</p>
+<p className="text-gray-600 font-medium">{trainStatus.destination_c}</p>
                 <p className="text-sm text-gray-500">Arrival</p>
               </div>
             </div>

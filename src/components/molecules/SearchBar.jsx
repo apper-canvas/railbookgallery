@@ -32,8 +32,8 @@ const SearchBar = ({
     setIsOpen(newValue.length > 0 && suggestions.length > 0);
   };
 
-  const handleSuggestionClick = (suggestion) => {
-    setSearchValue(suggestion.name || suggestion);
+const handleSuggestionClick = (suggestion) => {
+    setSearchValue(suggestion.name_c || suggestion);
     setIsOpen(false);
     if (onSuggestionClick) {
       onSuggestionClick(suggestion);
@@ -91,12 +91,12 @@ const SearchBar = ({
               <div className="flex items-center">
                 <ApperIcon name="MapPin" className="w-4 h-4 text-gray-400 mr-3" />
                 <div>
-                  <p className="font-medium text-gray-900">
-                    {suggestion.name || suggestion}
+<p className="font-medium text-gray-900">
+                    {suggestion.name_c || suggestion}
                   </p>
-                  {suggestion.city && (
+{suggestion.city_c && (
                     <p className="text-sm text-gray-500">
-                      {suggestion.city} - {suggestion.code}
+                      {suggestion.city_c} - {suggestion.code_c}
                     </p>
                   )}
                 </div>

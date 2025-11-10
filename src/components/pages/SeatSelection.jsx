@@ -54,7 +54,7 @@ const SeatSelection = () => {
       }
       setTrain(trainData);
       // Set default class to first available class
-      if (trainData.classes.length > 0) {
+if (trainData.classes.length > 0) {
         setSelectedClass(trainData.classes[0]);
       }
     } catch (err) {
@@ -173,7 +173,7 @@ const SeatSelection = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {train.trainNumber} - {train.trainName}
+{train.train_number_c} - {train.train_name_c}
             </h1>
             <p className="text-gray-600 mb-4 md:mb-0">
               {train.origin} → {train.destination} • {searchCriteria.journeyDate}
@@ -182,11 +182,11 @@ const SeatSelection = () => {
           <div className="flex items-center space-x-4">
             <div className="text-right">
               <p className="text-sm text-gray-500">Departure</p>
-              <p className="text-lg font-semibold text-gray-900">{train.departureTime}</p>
+<p className="text-lg font-semibold text-gray-900">{train.departure_time_c}</p>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">Duration</p>
-              <p className="text-lg font-semibold text-gray-900">{train.duration}</p>
+<p className="text-lg font-semibold text-gray-900">{train.duration_c}</p>
             </div>
           </div>
         </div>

@@ -51,7 +51,7 @@ const SearchResults = () => {
   const loadStationNames = async (origin, destination) => {
     try {
       const [originStation, destStation] = await Promise.all([
-        stationService.getByCode(origin),
+stationService.getByCode(origin),
         stationService.getByCode(destination)
       ]);
       
@@ -90,12 +90,12 @@ const SearchResults = () => {
 
     // Apply filters
     if (filters.class) {
-      filtered = filtered.filter(train => train.classes.includes(filters.class));
+filtered = filtered.filter(train => train.classes.includes(filters.class));
     }
 
     if (filters.departureTime) {
       filtered = filtered.filter(train => {
-        const hour = parseInt(train.departureTime.split(':')[0]);
+const hour = parseInt(train.departure_time_c.split(':')[0]);
         switch (filters.departureTime) {
           case 'morning':
             return hour >= 6 && hour < 12;
@@ -147,7 +147,7 @@ const SearchResults = () => {
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'departure':
-          return a.departureTime.localeCompare(b.departureTime);
+return a.departure_time_c.localeCompare(b.departure_time_c);
         case 'arrival':
           return a.arrivalTime.localeCompare(b.arrivalTime);
         case 'duration':

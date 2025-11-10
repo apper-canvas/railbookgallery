@@ -1,32 +1,100 @@
-import bookingsData from "@/services/mockData/bookings.json";
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-let bookings = [...bookingsData];
-
-const { ApperClient } = window.ApperSDK || {};
+import { getApperClient } from '@/services/apperClient';
+import trainService from './trainService';
 
 const bookingService = {
   async getAll() {
-    await delay(400);
-    return [...bookings];
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('booking_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "pnr_c"}},
+          {"field": {"Name": "train_number_c"}},
+          {"field": {"Name": "train_name_c"}},
+          {"field": {"Name": "journey_date_c"}},
+          {"field": {"Name": "origin_c"}},
+          {"field": {"Name": "destination_c"}},
+          {"field": {"Name": "departure_time_c"}},
+          {"field": {"Name": "arrival_time_c"}},
+          {"field": {"Name": "passengers_c"}},
+          {"field": {"Name": "seat_numbers_c"}},
+          {"field": {"Name": "class_c"}},
+          {"field": {"Name": "fare_c"}},
+          {"field": {"Name": "booking_date_c"}},
+          {"field": {"Name": "status_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return (response.data || []).map(booking => ({
+        ...booking,
+        // Parse JSON fields
+        passengers: booking.passengers_c ? JSON.parse(booking.passengers_c) : [],
+        seatNumbers: booking.seat_numbers_c ? JSON.parse(booking.seat_numbers_c) : []
+      }));
+    } catch (error) {
+      console.error("Error fetching bookings:", error?.response?.data?.message || error);
+      return [];
+    }
   },
 
-async getByPnr(pnr) {
-    await delay(300);
-    return bookings.find(booking => booking.pnr === pnr);
+  async getByPnr(pnr) {
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('booking_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "pnr_c"}},
+          {"field": {"Name": "train_number_c"}},
+          {"field": {"Name": "train_name_c"}},
+          {"field": {"Name": "journey_date_c"}},
+          {"field": {"Name": "origin_c"}},
+          {"field": {"Name": "destination_c"}},
+          {"field": {"Name": "departure_time_c"}},
+          {"field": {"Name": "arrival_time_c"}},
+          {"field": {"Name": "passengers_c"}},
+          {"field": {"Name": "seat_numbers_c"}},
+          {"field": {"Name": "class_c"}},
+          {"field": {"Name": "fare_c"}},
+          {"field": {"Name": "booking_date_c"}},
+          {"field": {"Name": "status_c"}}
+        ],
+        where: [
+          {
+            "FieldName": "pnr_c",
+            "Operator": "EqualTo",
+            "Values": [pnr]
+          }
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      const booking = response.data && response.data.length > 0 ? response.data[0] : null;
+      if (!booking) return null;
+
+      return {
+        ...booking,
+        // Parse JSON fields
+        passengers: booking.passengers_c ? JSON.parse(booking.passengers_c) : [],
+        seatNumbers: booking.seat_numbers_c ? JSON.parse(booking.seat_numbers_c) : []
+      };
+    } catch (error) {
+      console.error("Error fetching booking:", error?.response?.data?.message || error);
+      return null;
+    }
   },
 
   async downloadTicketPdf(booking) {
     try {
-      if (!ApperClient) {
-        throw new Error('ApperClient not available');
-      }
-
-      const apperClient = new ApperClient({
-        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-      });
+      const apperClient = getApperClient();
 
       const result = await apperClient.functions.invoke(import.meta.env.VITE_GENERATE_TICKET_PDF, {
         body: JSON.stringify(booking),
@@ -56,46 +124,113 @@ async getByPnr(pnr) {
   },
 
   async getUserBookings() {
-    await delay(400);
-    // In a real app, this would filter by user ID
-    return [...bookings];
+    // In a production app, this would filter by user ID from authenticated user
+    return this.getAll();
   },
 
   async createBooking(bookingData) {
-    await delay(600);
-    
-    const newBooking = {
-      Id: Math.max(...bookings.map(b => b.Id)) + 1,
-      pnr: this.generatePnr(),
-      ...bookingData,
-      bookingDate: new Date().toISOString().split('T')[0],
-      status: 'Confirmed'
-    };
+    try {
+      const apperClient = getApperClient();
+      
+      const bookingRecord = {
+        Name: `Booking ${this.generatePnr()}`,
+        pnr_c: this.generatePnr(),
+        train_number_c: bookingData.trainNumber,
+        train_name_c: bookingData.trainName,
+        journey_date_c: bookingData.journeyDate,
+        origin_c: bookingData.origin,
+        destination_c: bookingData.destination,
+        departure_time_c: bookingData.departureTime,
+        arrival_time_c: bookingData.arrivalTime,
+        passengers_c: JSON.stringify(bookingData.passengers),
+        seat_numbers_c: JSON.stringify(bookingData.seatNumbers),
+        class_c: bookingData.class,
+        fare_c: bookingData.fare,
+        booking_date_c: new Date().toISOString().split('T')[0],
+        status_c: 'Confirmed'
+      };
 
-    bookings.unshift(newBooking);
-    return newBooking;
+      const response = await apperClient.createRecord('booking_c', {
+        records: [bookingRecord]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to create booking:`, failed);
+          failed.forEach(record => {
+            record.errors?.forEach(error => console.error(`${error.fieldLabel}: ${error}`));
+          });
+          throw new Error('Failed to create booking');
+        }
+        
+        const newBooking = successful[0].data;
+        return {
+          ...newBooking,
+          passengers: JSON.parse(newBooking.passengers_c),
+          seatNumbers: JSON.parse(newBooking.seat_numbers_c)
+        };
+      }
+
+      throw new Error('No results returned from booking creation');
+    } catch (error) {
+      console.error("Error creating booking:", error?.response?.data?.message || error);
+      throw error;
+    }
   },
 
   async cancelBooking(pnr) {
-    await delay(500);
-    const bookingIndex = bookings.findIndex(b => b.pnr === pnr);
-    
-    if (bookingIndex === -1) {
-      throw new Error('Booking not found');
+    try {
+      const booking = await this.getByPnr(pnr);
+      if (!booking) {
+        throw new Error('Booking not found');
+      }
+
+      const refundAmount = this.calculateRefund(booking);
+      
+      const apperClient = getApperClient();
+      const response = await apperClient.updateRecord('booking_c', {
+        records: [{
+          Id: booking.Id,
+          status_c: 'Cancelled'
+        }]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to cancel booking:`, failed);
+          throw new Error('Failed to cancel booking');
+        }
+        
+        return {
+          booking: {
+            ...booking,
+            status_c: 'Cancelled'
+          },
+          refundAmount
+        };
+      }
+
+      throw new Error('No results returned from booking cancellation');
+    } catch (error) {
+      console.error("Error cancelling booking:", error?.response?.data?.message || error);
+      throw error;
     }
-
-    const booking = bookings[bookingIndex];
-    const refundAmount = this.calculateRefund(booking);
-    
-    bookings[bookingIndex] = {
-      ...booking,
-      status: 'Cancelled'
-    };
-
-    return {
-      booking: bookings[bookingIndex],
-      refundAmount
-    };
   },
 
   generatePnr() {
@@ -103,7 +238,7 @@ async getByPnr(pnr) {
   },
 
   calculateRefund(booking) {
-    const journeyDate = new Date(booking.journeyDate);
+    const journeyDate = new Date(booking.journey_date_c);
     const today = new Date();
     const daysUntilJourney = Math.ceil((journeyDate - today) / (1000 * 60 * 60 * 24));
     
@@ -116,13 +251,11 @@ async getByPnr(pnr) {
       refundPercentage = 0; // No refund for past journeys
     }
     
-    return Math.floor(booking.fare * refundPercentage);
+    return Math.floor(booking.fare_c * refundPercentage);
   },
 
   async calculateFare(trainId, travelClass, passengerCount) {
-    await delay(300);
-    const trainsData = await import("@/services/mockData/trains.json");
-    const train = trainsData.default.find(t => t.Id === parseInt(trainId));
+    const train = await trainService.getById(trainId);
     
     if (!train || !train.fare[travelClass]) {
       return { baseFare: 0, taxes: 0, total: 0 };

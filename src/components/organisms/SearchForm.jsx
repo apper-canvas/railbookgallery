@@ -51,10 +51,10 @@ const SearchForm = ({ initialData, onSearch }) => {
     }
   };
 
-  const handleStationSelect = (station, field) => {
+const handleStationSelect = (station, field) => {
     setFormData(prev => ({
       ...prev,
-      [field]: station.code
+      [field]: station.code_c
     }));
     setStationSuggestions([]);
     setActiveField(null);

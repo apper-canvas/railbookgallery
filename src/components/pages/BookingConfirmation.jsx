@@ -93,8 +93,8 @@ const BookingConfirmation = () => {
         <p className="text-xl text-gray-600 mb-2">
           Your train ticket has been successfully booked
         </p>
-        <p className="text-lg">
-          PNR: <span className="font-mono font-bold text-primary">{booking.pnr}</span>
+<p className="text-lg">
+          PNR: <span className="font-mono font-bold text-primary">{booking.pnr_c}</span>
         </p>
       </div>
 
@@ -104,14 +104,14 @@ const BookingConfirmation = () => {
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold mb-2">
-                {booking.trainNumber} - {booking.trainName}
+{booking.train_number_c} - {booking.train_name_c}
               </h2>
               <p className="text-blue-100">
-                {booking.journeyDate}
+{booking.journey_date_c}
               </p>
             </div>
             <Badge variant="confirmed" className="bg-white text-green-700 border-green-200">
-              {booking.status}
+{booking.status_c}
             </Badge>
           </div>
         </div>
@@ -121,9 +121,9 @@ const BookingConfirmation = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="text-center">
               <p className="text-3xl font-bold text-gray-900 mb-2">
-                {booking.departureTime}
+{booking.departure_time_c}
               </p>
-              <p className="text-gray-600 font-medium">{booking.origin}</p>
+<p className="text-gray-600 font-medium">{booking.origin_c}</p>
               <p className="text-sm text-gray-500">Departure</p>
             </div>
             
@@ -143,9 +143,9 @@ const BookingConfirmation = () => {
             
             <div className="text-center">
               <p className="text-3xl font-bold text-gray-900 mb-2">
-                {booking.arrivalTime}
+{booking.arrival_time_c}
               </p>
-              <p className="text-gray-600 font-medium">{booking.destination}</p>
+<p className="text-gray-600 font-medium">{booking.destination_c}</p>
               <p className="text-sm text-gray-500">Arrival</p>
             </div>
           </div>
@@ -183,7 +183,7 @@ const BookingConfirmation = () => {
               <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg border border-blue-100 p-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Travel Class:</span>
-                  <span className="font-medium text-gray-900">{booking.class}</span>
+<span className="font-medium text-gray-900">{booking.class_c}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Total Seats:</span>
@@ -191,13 +191,13 @@ const BookingConfirmation = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Seat Numbers:</span>
-                  <span className="font-medium text-gray-900">{booking.seatNumbers.join(", ")}</span>
+<span className="font-medium text-gray-900">{booking.seatNumbers.join(", ")}</span>
                 </div>
                 <div className="border-t border-blue-200 pt-3">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold text-gray-900">Total Fare:</span>
                     <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                      ₹{booking.fare.toLocaleString()}
+₹{booking.fare_c.toLocaleString()}
                     </span>
                   </div>
                 </div>

@@ -73,14 +73,14 @@ const ReviewPayment = () => {
     setLoading(true);
     
     try {
-      const booking = await bookingService.createBooking({
-        trainNumber: train.trainNumber,
-        trainName: train.trainName,
+const booking = await bookingService.createBooking({
+        trainNumber: train.train_number_c,
+        trainName: train.train_name_c,
         journeyDate: bookingData.journeyDate,
         origin: bookingData.origin,
         destination: bookingData.destination,
-        departureTime: train.departureTime,
-        arrivalTime: train.arrivalTime,
+        departureTime: train.departure_time_c,
+        arrivalTime: train.arrival_time_c,
         passengers: passengers,
         seatNumbers: bookingData.seats,
         class: bookingData.class,
@@ -90,7 +90,7 @@ const ReviewPayment = () => {
       toast.success("Booking confirmed successfully!");
       
       // Navigate to confirmation page
-      navigate(`/booking-confirmation?pnr=${booking.pnr}`);
+navigate(`/booking-confirmation?pnr=${booking.pnr_c}`);
       
     } catch (err) {
       console.error("Booking error:", err);
@@ -178,8 +178,8 @@ const ReviewPayment = () => {
               <div className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg p-6 border border-blue-100">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {train.trainNumber} - {train.trainName}
+<h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      {train.train_number_c} - {train.train_name_c}
                     </h3>
                     <p className="text-gray-600">
                       {bookingData.journeyDate}
@@ -191,7 +191,7 @@ const ReviewPayment = () => {
                 <div className="flex items-center justify-between mb-6">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-900 mb-1">
-                      {train.departureTime}
+{train.departure_time_c}
                     </p>
                     <p className="text-sm text-gray-600">{bookingData.origin}</p>
                   </div>
@@ -204,12 +204,12 @@ const ReviewPayment = () => {
                       <div className="w-16 h-px bg-gradient-to-r from-secondary to-primary"></div>
                       <div className="w-2 h-2 bg-primary rounded-full"></div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">{train.duration}</p>
+<p className="text-xs text-gray-500 mt-2">{train.duration_c}</p>
                   </div>
                   
                   <div className="text-center">
                     <p className="text-2xl font-bold text-gray-900 mb-1">
-                      {train.arrivalTime}
+{train.arrival_time_c}
                     </p>
                     <p className="text-sm text-gray-600">{bookingData.destination}</p>
                   </div>

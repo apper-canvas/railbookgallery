@@ -21,31 +21,31 @@ const TrainCard = ({ train, onBookNow, onViewDetails }) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center space-x-3 mb-2">
-            <h3 className="text-xl font-semibold text-gray-900">
-              {train.trainNumber}
+<h3 className="text-xl font-semibold text-gray-900">
+              {train.train_number_c}
             </h3>
             <div className="h-4 w-px bg-gray-300"></div>
             <Badge variant="primary" className="text-xs">
               {train.classes.join(", ")}
             </Badge>
           </div>
-          <p className="text-gray-700 font-medium">
-            {train.trainName}
+<p className="text-gray-700 font-medium">
+            {train.train_name_c}
           </p>
         </div>
         <div className="text-right">
           <p className="text-sm text-gray-500 mb-1">Duration</p>
-          <p className="font-semibold text-gray-900">{train.duration}</p>
+<p className="font-semibold text-gray-900">{train.duration_c}</p>
         </div>
       </div>
 
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-8">
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {train.departureTime}
+<p className="text-2xl font-bold text-gray-900 mb-1">
+              {train.departure_time_c}
             </p>
-            <p className="text-sm text-gray-600">{train.origin}</p>
+<p className="text-sm text-gray-600">{train.origin_c}</p>
           </div>
           
           <div className="flex flex-col items-center">
@@ -56,14 +56,14 @@ const TrainCard = ({ train, onBookNow, onViewDetails }) => {
               <div className="w-16 h-px bg-gradient-to-r from-secondary to-primary"></div>
               <div className="w-2 h-2 bg-primary rounded-full"></div>
             </div>
-            <p className="text-xs text-gray-500 mt-2">{train.duration}</p>
+<p className="text-xs text-gray-500 mt-2">{train.duration_c}</p>
           </div>
           
           <div className="text-center">
-            <p className="text-2xl font-bold text-gray-900 mb-1">
-              {train.arrivalTime}
+<p className="text-2xl font-bold text-gray-900 mb-1">
+              {train.arrival_time_c}
             </p>
-            <p className="text-sm text-gray-600">{train.destination}</p>
+<p className="text-sm text-gray-600">{train.destination_c}</p>
           </div>
         </div>
       </div>

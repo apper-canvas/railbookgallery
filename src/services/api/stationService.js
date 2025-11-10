@@ -1,33 +1,116 @@
-import stationsData from "@/services/mockData/stations.json";
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { getApperClient } from '@/services/apperClient';
 
 const stationService = {
   async getAll() {
-    await delay(300);
-    return [...stationsData];
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('station_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "city_c"}},
+          {"field": {"Name": "code_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error fetching stations:", error?.response?.data?.message || error);
+      return [];
+    }
   },
 
   async search(query) {
-    await delay(200);
     if (!query || query.length < 2) return [];
     
-    const searchTerm = query.toLowerCase();
-    return stationsData.filter(station => 
-      station.name.toLowerCase().includes(searchTerm) ||
-      station.city.toLowerCase().includes(searchTerm) ||
-      station.code.toLowerCase().includes(searchTerm)
-    );
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('station_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "city_c"}},
+          {"field": {"Name": "code_c"}}
+        ],
+        where: [
+          {
+            "FieldName": "name_c",
+            "Operator": "Contains",
+            "Values": [query.toLowerCase()]
+          }
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Error searching stations:", error?.response?.data?.message || error);
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(200);
-    return stationsData.find(station => station.Id === parseInt(id));
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.getRecordById('station_c', parseInt(id), {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "city_c"}},
+          {"field": {"Name": "code_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching station:", error?.response?.data?.message || error);
+      return null;
+    }
   },
 
   async getByCode(code) {
-    await delay(200);
-    return stationsData.find(station => station.code === code);
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('station_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "city_c"}},
+          {"field": {"Name": "code_c"}}
+        ],
+        where: [
+          {
+            "FieldName": "code_c",
+            "Operator": "EqualTo",
+            "Values": [code]
+          }
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      return response.data && response.data.length > 0 ? response.data[0] : null;
+    } catch (error) {
+      console.error("Error fetching station by code:", error?.response?.data?.message || error);
+      return null;
+    }
   }
 };
 

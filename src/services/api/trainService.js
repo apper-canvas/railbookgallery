@@ -1,64 +1,172 @@
-import trainsData from "@/services/mockData/trains.json";
-import stationService from "@/services/api/stationService";
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { getApperClient } from '@/services/apperClient';
 
 const trainService = {
   async searchTrains(searchParams) {
-    await delay(500);
     const { origin, destination, journeyDate, travelClass } = searchParams;
     
     if (!origin || !destination) {
       return [];
     }
 
-    // Find trains matching the route
-    const matchingTrains = trainsData.filter(train => {
-      const routeMatch = (train.origin === origin && train.destination === destination);
-      const classMatch = !travelClass || train.classes.includes(travelClass);
-      return routeMatch && classMatch;
-    });
+    try {
+      const apperClient = getApperClient();
+      let whereConditions = [
+        {
+          "FieldName": "origin_c",
+          "Operator": "EqualTo",
+          "Values": [origin]
+        },
+        {
+          "FieldName": "destination_c",
+          "Operator": "EqualTo",
+          "Values": [destination]
+        }
+      ];
 
-    // Add some randomization to seat availability for demo
-    return matchingTrains.map(train => ({
-      ...train,
-      availableSeats: {
-        ...train.availableSeats,
-        // Randomly reduce available seats to simulate booking
-        ...Object.keys(train.availableSeats).reduce((acc, cls) => {
-          const original = train.availableSeats[cls];
-          acc[cls] = Math.max(0, original - Math.floor(Math.random() * 20));
-          return acc;
-        }, {})
+      if (travelClass) {
+        whereConditions.push({
+          "FieldName": "classes_c",
+          "Operator": "Contains",
+          "Values": [travelClass]
+        });
       }
-    }));
+
+      const response = await apperClient.fetchRecords('train_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "train_number_c"}},
+          {"field": {"Name": "train_name_c"}},
+          {"field": {"Name": "origin_c"}},
+          {"field": {"Name": "destination_c"}},
+          {"field": {"Name": "departure_time_c"}},
+          {"field": {"Name": "arrival_time_c"}},
+          {"field": {"Name": "duration_c"}},
+          {"field": {"Name": "classes_c"}},
+          {"field": {"Name": "available_seats_c"}},
+          {"field": {"Name": "fare_c"}}
+        ],
+        where: whereConditions
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return (response.data || []).map(train => ({
+        ...train,
+        // Parse JSON fields
+        classes: train.classes_c ? JSON.parse(train.classes_c) : [],
+        availableSeats: train.available_seats_c ? JSON.parse(train.available_seats_c) : {},
+        fare: train.fare_c ? JSON.parse(train.fare_c) : {}
+      }));
+    } catch (error) {
+      console.error("Error searching trains:", error?.response?.data?.message || error);
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(300);
-    return trainsData.find(train => train.Id === parseInt(id));
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.getRecordById('train_c', parseInt(id), {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "train_number_c"}},
+          {"field": {"Name": "train_name_c"}},
+          {"field": {"Name": "origin_c"}},
+          {"field": {"Name": "destination_c"}},
+          {"field": {"Name": "departure_time_c"}},
+          {"field": {"Name": "arrival_time_c"}},
+          {"field": {"Name": "duration_c"}},
+          {"field": {"Name": "classes_c"}},
+          {"field": {"Name": "available_seats_c"}},
+          {"field": {"Name": "fare_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      const train = response.data;
+      if (!train) return null;
+
+      return {
+        ...train,
+        // Parse JSON fields
+        classes: train.classes_c ? JSON.parse(train.classes_c) : [],
+        availableSeats: train.available_seats_c ? JSON.parse(train.available_seats_c) : {},
+        fare: train.fare_c ? JSON.parse(train.fare_c) : {}
+      };
+    } catch (error) {
+      console.error("Error fetching train:", error?.response?.data?.message || error);
+      return null;
+    }
   },
 
   async getByTrainNumber(trainNumber) {
-    await delay(300);
-    return trainsData.find(train => train.trainNumber === trainNumber);
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords('train_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "train_number_c"}},
+          {"field": {"Name": "train_name_c"}},
+          {"field": {"Name": "origin_c"}},
+          {"field": {"Name": "destination_c"}},
+          {"field": {"Name": "departure_time_c"}},
+          {"field": {"Name": "arrival_time_c"}},
+          {"field": {"Name": "duration_c"}},
+          {"field": {"Name": "classes_c"}},
+          {"field": {"Name": "available_seats_c"}},
+          {"field": {"Name": "fare_c"}}
+        ],
+        where: [
+          {
+            "FieldName": "train_number_c",
+            "Operator": "EqualTo",
+            "Values": [trainNumber]
+          }
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        return null;
+      }
+
+      const train = response.data && response.data.length > 0 ? response.data[0] : null;
+      if (!train) return null;
+
+      return {
+        ...train,
+        // Parse JSON fields
+        classes: train.classes_c ? JSON.parse(train.classes_c) : [],
+        availableSeats: train.available_seats_c ? JSON.parse(train.available_seats_c) : {},
+        fare: train.fare_c ? JSON.parse(train.fare_c) : {}
+      };
+    } catch (error) {
+      console.error("Error fetching train by number:", error?.response?.data?.message || error);
+      return null;
+    }
   },
 
   async getSeatLayout(trainId, travelClass) {
-    await delay(400);
-    const train = trainsData.find(t => t.Id === parseInt(trainId));
+    const train = await this.getById(trainId);
     if (!train || !train.classes.includes(travelClass)) {
       return null;
     }
 
     // Generate seat layout based on class
     const layouts = {
-      '1A': this.generateSeatLayout('1A', 4, 6), // 4 coaches, 6 seats per coach
-      '2A': this.generateSeatLayout('2A', 6, 8), // 6 coaches, 8 seats per coach  
-      '3A': this.generateSeatLayout('3A', 8, 9), // 8 coaches, 9 seats per coach
-      'SL': this.generateSeatLayout('SL', 12, 8), // 12 coaches, 8 seats per coach
-      'CC': this.generateSeatLayout('CC', 4, 12), // 4 coaches, 12 seats per coach
-      'EC': this.generateSeatLayout('EC', 2, 12)  // 2 coaches, 12 seats per coach
+      '1A': this.generateSeatLayout('1A', 4, 6),
+      '2A': this.generateSeatLayout('2A', 6, 8), 
+      '3A': this.generateSeatLayout('3A', 8, 9),
+      'SL': this.generateSeatLayout('SL', 12, 8),
+      'CC': this.generateSeatLayout('CC', 4, 12),
+      'EC': this.generateSeatLayout('EC', 2, 12)
     };
 
     return layouts[travelClass] || null;
@@ -74,7 +182,7 @@ const trainService = {
       for (let j = 1; j <= seatsPerCoach; j++) {
         seats.push({
           seatNumber: `${coachName}-${j}`,
-          status: Math.random() > 0.3 ? 'available' : 'occupied', // 70% available
+          status: Math.random() > 0.3 ? 'available' : 'occupied',
           type: this.getSeatType(travelClass, j)
         });
       }
@@ -98,8 +206,7 @@ const trainService = {
   },
 
   async getTrainStatus(trainNumber) {
-    await delay(400);
-    const train = trainsData.find(t => t.trainNumber === trainNumber);
+    const train = await this.getByTrainNumber(trainNumber);
     if (!train) return null;
 
     // Mock live status
@@ -116,4 +223,5 @@ const trainService = {
   }
 };
 
+export default trainService;
 export default trainService;

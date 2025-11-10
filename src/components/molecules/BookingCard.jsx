@@ -23,15 +23,15 @@ const BookingCard = ({ booking, onViewDetails, onCancel, onDownloadTicket }) => 
     }
   };
 
-  const isUpcoming = () => {
-    const journeyDate = new Date(booking.journeyDate);
+const isUpcoming = () => {
+    const journeyDate = new Date(booking.journey_date_c);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return journeyDate >= today;
   };
 
-  const canCancel = () => {
-    return booking.status.toLowerCase() === 'confirmed' && isUpcoming();
+const canCancel = () => {
+    return booking.status_c.toLowerCase() === 'confirmed' && isUpcoming();
   };
 
   return (
@@ -39,18 +39,18 @@ const BookingCard = ({ booking, onViewDetails, onCancel, onDownloadTicket }) => 
       <div className="flex justify-between items-start mb-4">
         <div>
           <div className="flex items-center space-x-3 mb-2">
-            <p className="text-sm text-gray-500">PNR: {booking.pnr}</p>
-            <Badge variant={getStatusVariant(booking.status)}>
-              {booking.status}
+<p className="text-sm text-gray-500">PNR: {booking.pnr_c}</p>
+<Badge variant={getStatusVariant(booking.status_c)}>
+              {booking.status_c}
             </Badge>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {booking.trainNumber} - {booking.trainName}
+<h3 className="text-lg font-semibold text-gray-900">
+            {booking.train_number_c} - {booking.train_name_c}
           </h3>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            ₹{booking.fare.toLocaleString()}
+<p className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            ₹{booking.fare_c.toLocaleString()}
           </p>
           <p className="text-xs text-gray-500">Total Fare</p>
         </div>
@@ -59,20 +59,20 @@ const BookingCard = ({ booking, onViewDetails, onCancel, onDownloadTicket }) => 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <div>
           <p className="text-xs text-gray-500 mb-1">Journey Date</p>
-          <p className="font-medium text-gray-900">
-            {formatDate(booking.journeyDate)}
+<p className="font-medium text-gray-900">
+            {formatDate(booking.journey_date_c)}
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">Route</p>
-          <p className="font-medium text-gray-900">
-            {booking.origin} → {booking.destination}
+<p className="font-medium text-gray-900">
+            {booking.origin_c} → {booking.destination_c}
           </p>
         </div>
         <div>
           <p className="text-xs text-gray-500 mb-1">Time</p>
-          <p className="font-medium text-gray-900">
-            {booking.departureTime} - {booking.arrivalTime}
+<p className="font-medium text-gray-900">
+            {booking.departure_time_c} - {booking.arrival_time_c}
           </p>
         </div>
         <div>
@@ -88,8 +88,8 @@ const BookingCard = ({ booking, onViewDetails, onCancel, onDownloadTicket }) => 
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <ApperIcon name="Armchair" className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">
-                Class: {booking.class}
+<span className="text-sm text-gray-600">
+                Class: {booking.class_c}
               </span>
             </div>
             <div className="flex items-center space-x-2">
@@ -112,7 +112,7 @@ const BookingCard = ({ booking, onViewDetails, onCancel, onDownloadTicket }) => 
               </Button>
             )}
             
-            {booking.status.toLowerCase() === 'confirmed' && onDownloadTicket && (
+{booking.status_c.toLowerCase() === 'confirmed' && onDownloadTicket && (
               <Button 
                 variant="outline" 
                 size="sm"

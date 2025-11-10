@@ -167,7 +167,7 @@ const PassengerDetails = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="text-xl font-bold text-gray-900 mb-2">
-                {train.trainNumber} - {train.trainName}
+{train.train_number_c} - {train.train_name_c}
               </h1>
               <p className="text-gray-600">
                 {bookingData.origin} → {bookingData.destination} • {bookingData.journeyDate}

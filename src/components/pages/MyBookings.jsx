@@ -52,21 +52,21 @@ const MyBookings = () => {
     // Filter by PNR
     if (searchPnr) {
       filtered = filtered.filter(booking => 
-        booking.pnr.toLowerCase().includes(searchPnr.toLowerCase()) ||
-        booking.trainNumber.includes(searchPnr) ||
-        booking.trainName.toLowerCase().includes(searchPnr.toLowerCase())
+booking.pnr_c.toLowerCase().includes(searchPnr.toLowerCase()) ||
+        booking.train_number_c.includes(searchPnr) ||
+        booking.train_name_c.toLowerCase().includes(searchPnr.toLowerCase())
       );
     }
 
     // Filter by status
     if (statusFilter !== "all") {
-      filtered = filtered.filter(booking => 
-        booking.status.toLowerCase() === statusFilter.toLowerCase()
+filtered = filtered.filter(booking => 
+        booking.status_c.toLowerCase() === statusFilter.toLowerCase()
       );
     }
 
     // Sort by booking date (newest first)
-    filtered.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+filtered.sort((a, b) => new Date(b.booking_date_c) - new Date(a.booking_date_c));
 
     setFilteredBookings(filtered);
   };
@@ -80,12 +80,12 @@ const MyBookings = () => {
     if (!cancellingBooking) return;
 
     try {
-      const result = await bookingService.cancelBooking(cancellingBooking.pnr);
+const result = await bookingService.cancelBooking(cancellingBooking.pnr_c);
       
       // Update the booking in the list
       setBookings(prev => prev.map(booking => 
-        booking.Id === cancellingBooking.Id 
-          ? { ...booking, status: "Cancelled" }
+booking.Id === cancellingBooking.Id 
+          ? { ...booking, status_c: "Cancelled" }
           : booking
       ));
 
@@ -99,7 +99,7 @@ const MyBookings = () => {
   };
 
   const handleViewDetails = (booking) => {
-    navigate(`/booking-confirmation?pnr=${booking.pnr}`);
+navigate(`/booking-confirmation?pnr=${booking.pnr_c}`);
   };
 
 const handleDownloadTicket = async (booking) => {
@@ -114,7 +114,7 @@ const handleDownloadTicket = async (booking) => {
 
   const getBookingStats = () => {
     const stats = bookings.reduce((acc, booking) => {
-      acc[booking.status.toLowerCase()] = (acc[booking.status.toLowerCase()] || 0) + 1;
+acc[booking.status_c.toLowerCase()] = (acc[booking.status_c.toLowerCase()] || 0) + 1;
       return acc;
     }, {});
 
@@ -280,15 +280,15 @@ const handleDownloadTicket = async (booking) => {
               <div className="bg-gradient-to-r from-red-50 to-rose-50 border border-red-200 rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-red-800">PNR:</span>
-                  <span className="font-mono font-medium text-red-900">{cancellingBooking.pnr}</span>
+<span className="font-mono font-medium text-red-900">{cancellingBooking.pnr_c}</span>
                 </div>
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-red-800">Train:</span>
-                  <span className="font-medium text-red-900">{cancellingBooking.trainNumber}</span>
+<span className="font-medium text-red-900">{cancellingBooking.train_number_c}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-red-800">Journey:</span>
-                  <span className="font-medium text-red-900">{cancellingBooking.journeyDate}</span>
+<span className="font-medium text-red-900">{cancellingBooking.journey_date_c}</span>
                 </div>
               </div>
               
